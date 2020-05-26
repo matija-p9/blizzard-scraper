@@ -152,9 +152,9 @@ def blue():
 
     # Close and shut down webdriver to avoid memory leaks.
     us_full_page.stop_client()
-    us_full_page.close()
+    us_full_page.quit()
     eu_full_page.stop_client()
-    eu_full_page.close()
+    eu_full_page.quit()
 
     # Write the scrape to a temporary file bluenewdata.txt.
     f = open("bluenewdata.txt", "w+", errors='ignore')
