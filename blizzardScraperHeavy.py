@@ -7,52 +7,59 @@ PING_AFTER_AMOUNT_OF_CYCLES = 1
 # Wait this long between scrapes.
 SECONDS_BETWEEN_SCRAPES = 0
 
-
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
-import os
-import time
-
-# Start Chrome webdrivers with all the options, for US and EU sites.
 options = Options()
 options.add_argument('--disable-gpu')
 options.add_argument('--headless')
 options.add_argument('--log-level=3')
 options.add_experimental_option('excludeSwitches',['enable-logging'])
+import os
+import time
+
+def refresh_blue_pages():
+    us_full_page.set_page_load_timeout(60)
+    us_full_page.refresh()
+    eu_full_page.set_page_load_timeout(60)
+    eu_full_page.refresh()
+
+# Start Chrome webdrivers with all the options, for US and EU sites.
 us_full_page = webdriver.Chrome(options=options)
 eu_full_page = webdriver.Chrome(options=options)
 us_full_page.get("https://us.forums.blizzard.com/en/wow/g/blizzard-tracker/activity/posts")
 eu_full_page.get("https://eu.forums.blizzard.com/en/wow/g/blizzard-tracker/activity/posts")
 
+# Start the scraping loop.
 scrapescounter = 0
 while True:
-    # Close all instances of Chrome and Chromedriver after CHROME_FLUSH_AFTER_CYCLES scrapes, to safeguard memory.
     scrapescounter += 1
-    if scrapescounter % CHROME_FLUSH_AFTER_CYCLES == 0:
-        print("-----------------------------------------------")
-        print(time.asctime(time.localtime(time.time())), '--- Flushing Chrome...')
-        print("-----------------------------------------------")
+
+    # Close all instances of Chrome and Chromedriver after CHROME_FLUSH_AFTER_CYCLES scrapes, to safeguard memory.
+    if CHROME_FLUSH_AFTER_CYCLES > 0:
+        if scrapescounter % CHROME_FLUSH_AFTER_CYCLES == 0:
+            print("-----------------------------------------------")
+            print(time.asctime(time.localtime(time.time())), '--- Flushing Chrome...')
+            print("-----------------------------------------------")
+            os.system("TASKKILL /f  /IM  CHROME.EXE >NUL 2>&1")
+            os.system("TASKKILL /f  /IM  CHROMEDRIVER.EXE >NUL 2>&1")
+
+    # Open Chrome, read the pages, or refresh existing instance of webdriver.
+    try:
+        refresh_blue_pages()
+    except:
         os.system("TASKKILL /f  /IM  CHROME.EXE >NUL 2>&1")
         os.system("TASKKILL /f  /IM  CHROMEDRIVER.EXE >NUL 2>&1")
-    
-    # Open Chrome, read the pages, store them in raw_html.
-    try:
-        us_full_page.refresh()
-        eu_full_page.refresh()
-    except:
+        us_full_page = webdriver.Chrome(options=options)
+        eu_full_page = webdriver.Chrome(options=options)
+        us_full_page.get("https://us.forums.blizzard.com/en/wow/g/blizzard-tracker/activity/posts")
+        eu_full_page.get("https://eu.forums.blizzard.com/en/wow/g/blizzard-tracker/activity/posts")
         try:
-            us_full_page.close()
-            us_full_page.stop_client()
-            us_full_page.quit()
-            eu_full_page.close()
-            eu_full_page.stop_client()
-            eu_full_page.quit()
+            refresh_blue_pages()
         except:
-            us_full_page = webdriver.Chrome(options=options)
-            eu_full_page = webdriver.Chrome(options=options)
-            us_full_page.get("https://us.forums.blizzard.com/en/wow/g/blizzard-tracker/activity/posts")
-            eu_full_page.get("https://eu.forums.blizzard.com/en/wow/g/blizzard-tracker/activity/posts")
+            continue
         continue
+    
+    # Store data in raw_html.
     us_raw_html = str(us_full_page.page_source)
     eu_raw_html = str(eu_full_page.page_source)
 
@@ -69,18 +76,24 @@ while True:
     content_end = '</div>'
 
     # Find locations of relevant links on the page.
-    i = 0
-    while True:
+    i, j = 0, 0
+    while j < 50:
         if us_raw_html.find(link_beg, i) + len(link_beg) < i:
             break
         us_link_loc.append(us_raw_html.find(link_beg, i) + len(link_beg))
         i = us_raw_html.find(link_beg, i) + len(link_beg)
-    i = 0
-    while True:
+        j += 1
+    if j == 50: # Reset loop if the webdriver failed to load anything.
+        continue
+    i, j = 0, 0
+    while j < 50:
         if eu_raw_html.find(link_beg, i) + len(link_beg) < i:
             break
         eu_link_loc.append(eu_raw_html.find(link_beg, i) + len(link_beg))
         i = eu_raw_html.find(link_beg, i) + len(link_beg)
+        j += 1
+    if j == 50: # Reset loop if the webdriver failed to load anything.
+        continue
 
     # Store post information in a 2D array.
     # [x][y]
@@ -135,13 +148,14 @@ while True:
         tf = open("data_blue.txt", "w", errors='ignore')
     tf.close()
 
+    # Ping to console output that a scrape has been made.
+    if scrapescounter % PING_AFTER_AMOUNT_OF_CYCLES == 0:
+        print(time.asctime(time.localtime(time.time())), '--- ping --- BLUE POSTS')
+
     import filecmp
-    import os
     if filecmp.cmp("data_blue.txt", "temp_blue.txt"):
         # No updates check and cleanup.
         os.remove("temp_blue.txt")
-        if scrapescounter % PING_AFTER_AMOUNT_OF_CYCLES == 0:
-            print(time.asctime(time.localtime(time.time())), '--- ping --- BLUE POSTS')
 
     else:
         # Write changes to data_blue.txt and data_blue_changes.txt.
@@ -188,12 +202,15 @@ while True:
     titlelocations = []
 
     # Map useful scraped data for parsing.
-    i = 0
-    while True:
+    i, j = 0, 0
+    while j < 150:
         if mystr.find(titlestr, i) + len(titlestr) < i:
             break
         titlelocations.append(mystr.find(titlestr, i) + len(titlestr))
         i = mystr.find(titlestr, i) + len(titlestr)
+        j += 1
+    if j == 150: # Reset loop if the webdriver failed to load anything.
+        continue
 
     # Write the scrape to a temporary file newdata.txt.
     nf = open("temp_wow_com.txt", "w")
@@ -213,19 +230,18 @@ while True:
         tf = open("data_wow_com.txt", "w")
     tf.close()
 
-    import filecmp
-    import os
-    import time
+    # Ping to console output that a scrape has been made.
+    if scrapescounter % PING_AFTER_AMOUNT_OF_CYCLES == 0:
+        print(time.asctime(time.localtime(time.time())), '--- ping --- WOW.com NEWS')
 
+    import filecmp
     if filecmp.cmp("data_wow_com.txt", "temp_wow_com.txt"):
         # No updates check and cleanup.
         os.remove("temp_wow_com.txt")
-        if scrapescounter % PING_AFTER_AMOUNT_OF_CYCLES == 0:
-            print(time.asctime(time.localtime(time.time())), '--- ping --- WOW.com NEWS')
+
     else:
-        import difflib
-        
         # Write changes to data_wow_com.txt and data_wow_com_changes.txt.
+        import difflib
         text1 = open("data_wow_com.txt", errors='ignore', encoding='ascii').readlines()
         text2 = open("temp_wow_com.txt", errors='ignore', encoding='ascii').readlines()
         changes = open("data_wow_com_changes.txt", "a")
