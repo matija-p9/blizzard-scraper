@@ -40,7 +40,7 @@ while True:
     if j == 150: # Reset loop if the webdriver failed to load anything.
         continue
 
-    # Write the scrape to a temporary file newdata.txt.
+    # Write the scrape to a temporary file temp_wow_com.txt.
     nf = open("temp_wow_com.txt", "w")
     for location in titlelocations:
         nf.write('\n')
@@ -72,25 +72,47 @@ while True:
         import difflib
         text1 = open("data_wow_com.txt", errors='ignore', encoding='ascii').readlines()
         text2 = open("temp_wow_com.txt", errors='ignore', encoding='ascii').readlines()
-        changes = open("data_wow_com_changes.txt", "a")
-        changes.write('\n')
-        changes.write(time.asctime(time.localtime(time.time())))
-        changes.write('\n\n')
-        for line in difflib.unified_diff(text1, text2):
-            if line.startswith('---') or line.startswith('+++'):
-                continue
-            elif line.startswith('-') or line.startswith('+'):
-                changes.write(line[1:])
-                print(line[1:], end='')
+
+        # Double-check to fix the bug of old data being reported as new:
+        # https://github.com/matija-p9/blizzard-scraper/issues/1
+        diff = 1
+        if len(text1) > 0:
+            diff, i = 0, 0
+            while i < len(text1):
+                falsediff = 0
+                try:
+                    if text1[i] != text2[i]:
+                        for j in range(len(text1)):
+                            if text1[i] == text2[j]:
+                                falsediff = 1
+                        if falsediff == 0:
+                            diff += 1
+                    i += 1
+                except:
+                    diff += 1
+                    continue
+        if diff > 0:
+
+            # Write the changes.
+            changes = open("data_wow_com_changes.txt", "a")
+            changes.write('\n')
+            changes.write(time.asctime(time.localtime(time.time())))
+            changes.write('\n\n')
+            for line in difflib.unified_diff(text1, text2):
+                if line.startswith('---') or line.startswith('+++'):
+                    continue
+                elif line.startswith('-') or line.startswith('+'):
+                    changes.write(line[1:])
+                    print(line[1:], end='')
+            changes.close()
+
+            # Alert user!
+            import winsound
+            winsound.PlaySound("sound.wav", winsound.SND_FILENAME)
 
         # Clean up the files.
         os.remove('data_wow_com.txt')
         os.rename('temp_wow_com.txt', 'data_wow_com.txt')
-        changes.close()
-        
-        # Alert user!
-        import winsound
-        winsound.PlaySound("sound.wav", winsound.SND_FILENAME)
 
     if SECONDS_BETWEEN_SCRAPES > 0:
         time.sleep(SECONDS_BETWEEN_SCRAPES)
