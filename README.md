@@ -7,6 +7,7 @@ The script checks these pages for updates, periodically:
 - https://www.worldofwarcraft.com/en-us/news/
 - https://us.forums.blizzard.com/en/wow/g/blizzard-tracker/activity/posts
 - https://eu.forums.blizzard.com/en/wow/g/blizzard-tracker/activity/posts
+
 When a change is detected, it's written in the console window, as well as corresponding .txt files.
 ---
 ## Setup
