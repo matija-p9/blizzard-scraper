@@ -9,6 +9,7 @@ The script checks these pages for updates, periodically:
 - https://eu.forums.blizzard.com/en/wow/g/blizzard-tracker/activity/posts
 
 When a change is detected, it's written in the console window, as well as corresponding .txt files.
+
 ---
 ## Setup
 To run the script, you need the following setup on your machine:
