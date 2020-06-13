@@ -19,6 +19,6 @@ With that done, edit blizzardScraperHeavy.py with a text editor to customize it 
 - CHROME_FLUSH_AFTER_CYCLES - amount of scrapes the script does before resetting Chrome completely. Useful to ensure no long-runtime memory leaks. 0 to switch off.
 - PING_AFTER_AMOUNT_OF_CYCLES - amount of scrapes the script does before notifying the user in the console.
 - SECONDS_BETWEEN_SCRAPES - how long should the script wait between two scrapes. It takes 3-4 seconds on average, without waiting.
-
+---
 Run blizzardScraperHeavy.py.
 You can optionally run blizzScraper-blueOnly.py or blizzScraper-newsOnly.py, to check only the relevant source.
