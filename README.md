@@ -1,5 +1,5 @@
 # Blizzard Scraper - WoW US news | WoW US/EU blue posts
-Python 3 script for reading and reporting content updates from World of Warcraft official sources
+Python3 script for reading and reporting content updates from World of Warcraft official sources
 
 ---
 ## Information
