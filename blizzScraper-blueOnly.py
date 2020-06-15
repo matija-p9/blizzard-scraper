@@ -1,3 +1,4 @@
+# Kill all Chrome processes.
 CHROME_FLUSH_AFTER_CYCLES = 20
 
 # Notify user the script is alive.
