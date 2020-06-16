@@ -2,7 +2,7 @@
 PING_AFTER_AMOUNT_OF_CYCLES = 1
 
 # Wait this long between scrapes.
-SECONDS_BETWEEN_SCRAPES = 0
+SECONDS_BETWEEN_SCRAPES = 5
 
 import os
 import time
@@ -40,8 +40,8 @@ while True:
     if j == 150: # Reset loop if the webdriver failed to load anything.
         continue
 
-    # Write the scrape to a temporary file temp_wow_com.txt.
-    nf = open("temp_wow_com.txt", "w")
+    # Write the scrape to a temporary file _wow_news_tmp.txt.
+    nf = open("_wow_news_tmp.txt", "w")
     for location in titlelocations:
         nf.write('\n')
         nf.write(mystr[location:mystr.find(divclosestr, location)])
@@ -51,27 +51,27 @@ while True:
         nf.write('\n')
     nf.close()
 
-    # Create data_wow_com.txt if it doesn't exist.
+    # Create _wow_news.txt if it doesn't exist.
     try:
-        tf = open("data_wow_com.txt", "r")
+        tf = open("_wow_news.txt", "r")
     except:
-        tf = open("data_wow_com.txt", "w")
+        tf = open("_wow_news.txt", "w")
     tf.close()
 
     # Ping to console output that a scrape has been made.
     if scrapescounter % PING_AFTER_AMOUNT_OF_CYCLES == 0:
-        print(time.asctime(time.localtime(time.time())), '--- ping --- WOW.com NEWS')
+        print(time.asctime(time.localtime(time.time())), '--- ping --- wow_news')
 
     import filecmp
-    if filecmp.cmp("data_wow_com.txt", "temp_wow_com.txt"):
+    if filecmp.cmp("_wow_news.txt", "_wow_news_tmp.txt"):
         # No updates check and cleanup.
-        os.remove("temp_wow_com.txt")
+        os.remove("_wow_news_tmp.txt")
 
     else:
-        # Write changes to data_wow_com.txt and data_wow_com_changes.txt.
+        # Write changes to _wow_news.txt and _wow_news_recent.txt.
         import difflib
-        text1 = open("data_wow_com.txt", errors='ignore', encoding='ascii').readlines()
-        text2 = open("temp_wow_com.txt", errors='ignore', encoding='ascii').readlines()
+        text1 = open("_wow_news.txt", errors='ignore', encoding='ascii').readlines()
+        text2 = open("_wow_news_tmp.txt", errors='ignore', encoding='ascii').readlines()
 
         # Double-check to fix the bug of old data being reported as new:
         # https://github.com/matija-p9/blizzard-scraper/issues/1
@@ -94,7 +94,7 @@ while True:
         if diff > 0:
 
             # Write the changes.
-            changes = open("data_wow_com_changes.txt", "a")
+            changes = open("_wow_news_recent.txt", "w")
             changes.write('\n')
             changes.write(time.asctime(time.localtime(time.time())))
             changes.write('\n\n')
@@ -111,8 +111,8 @@ while True:
             winsound.PlaySound("sound.wav", winsound.SND_FILENAME)
 
         # Clean up the files.
-        os.remove('data_wow_com.txt')
-        os.rename('temp_wow_com.txt', 'data_wow_com.txt')
+        os.remove('_wow_news.txt')
+        os.rename('_wow_news_tmp.txt', '_wow_news.txt')
 
     if SECONDS_BETWEEN_SCRAPES > 0:
         time.sleep(SECONDS_BETWEEN_SCRAPES)

@@ -1,11 +1,11 @@
 # Kill all Chrome processes.
-CHROME_FLUSH_AFTER_CYCLES = 20
+CHROME_FLUSH_AFTER_CYCLES = 0
 
 # Notify user the script is alive.
 PING_AFTER_AMOUNT_OF_CYCLES = 1
 
 # Wait this long between scrapes.
-SECONDS_BETWEEN_SCRAPES = 0
+SECONDS_BETWEEN_SCRAPES = 5
 
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -128,8 +128,8 @@ while True:
         post.append(p)
     post.sort(reverse=True)
 
-    # Write the scrape to a temporary file temp_blue.txt.
-    f = open("temp_blue.txt", "w+", errors='ignore')
+    # Write the scrape to a temporary file _wow_blue_tmp.txt.
+    f = open("_wow_blue_tmp.txt", "w+", errors='ignore')
     for i in range(len(post)):
         f.write("\n")
         f.write(post[i][1] + " - " + post[i][2])
@@ -141,29 +141,28 @@ while True:
         f.write("\n")
     f.close()
 
-    # Create data_blue.txt if it doesn't exist.
+    # Create _wow_blue.txt if it doesn't exist.
     try:
-        tf = open("data_blue.txt", "r", errors='ignore')
+        tf = open("_wow_blue.txt", "r", errors='ignore')
     except:
-        tf = open("data_blue.txt", "w", errors='ignore')
+        tf = open("_wow_blue.txt", "w", errors='ignore')
     tf.close()
 
     # Ping to console output that a scrape has been made.
     if scrapescounter % PING_AFTER_AMOUNT_OF_CYCLES == 0:
-        print(time.asctime(time.localtime(time.time())), '--- ping --- BLUE POSTS')
+        print(time.asctime(time.localtime(time.time())), '--- ping --- wow_blue')
 
     import filecmp
-    if filecmp.cmp("data_blue.txt", "temp_blue.txt"):
+    if filecmp.cmp("_wow_blue.txt", "_wow_blue_tmp.txt"):
         # No updates check and cleanup.
-        os.remove("temp_blue.txt")
+        os.remove("_wow_blue_tmp.txt")
 
     else:
-        # Write changes to data_blue.txt and data_blue_changes.txt.
+        # Write changes to _wow_blue.txt and _wow_blue_recent.txt.
         import difflib
-        text1 = open("data_blue.txt", errors='ignore', encoding='ascii').readlines()
-        text2 = open("temp_blue.txt", errors='ignore', encoding='ascii').readlines()
-        changes = open("data_blue_changes.txt", "a")
-        changes.write('----------')
+        text1 = open("_wow_blue.txt", errors='ignore', encoding='ascii').readlines()
+        text2 = open("_wow_blue_tmp.txt", errors='ignore', encoding='ascii').readlines()
+        changes = open("_wow_blue_recent.txt", "w")
         for line in difflib.unified_diff(text1, text2):
             if line.startswith('---') or line.startswith('+++'):
                 continue
@@ -172,8 +171,8 @@ while True:
                 print(line[1:], end='')
 
         # Clean up the files.
-        os.remove('data_blue.txt')
-        os.rename('temp_blue.txt', 'data_blue.txt')
+        os.remove('_wow_blue.txt')
+        os.rename('_wow_blue_tmp.txt', '_wow_blue.txt')
         changes.close()
 
         # Alert user!
