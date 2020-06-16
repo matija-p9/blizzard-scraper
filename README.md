@@ -4,12 +4,12 @@ Python3 script for reading and reporting content updates from World of Warcraft 
 ---
 ## Information
 The script checks these pages for updates, periodically:
-- https://news.blizzard.com/en-us - Blizzard News
-- https://us.forums.blizzard.com/en/d3/g/blizzard-tracker/activity/posts
-- https://eu.forums.blizzard.com/en/d3/g/blizzard-tracker/activity/posts - Diablo 3 Blue posts
-- https://us.forums.blizzard.com/en/wow/g/blizzard-tracker/activity/posts
-- https://eu.forums.blizzard.com/en/wow/g/blizzard-tracker/activity/posts - WoW Blue posts
-- https://www.worldofwarcraft.com/en-us/news/ - WoW News
+- Blizzard News - https://news.blizzard.com/en-us
+- Diablo 3 Blue posts (US) - https://us.forums.blizzard.com/en/d3/g/blizzard-tracker/activity/posts
+- Diablo 3 Blue posts (EU) - https://eu.forums.blizzard.com/en/d3/g/blizzard-tracker/activity/posts
+- WoW Blue posts (US) - https://us.forums.blizzard.com/en/wow/g/blizzard-tracker/activity/posts
+- WoW Blue posts (EU) - https://eu.forums.blizzard.com/en/wow/g/blizzard-tracker/activity/posts
+- WoW News - https://www.worldofwarcraft.com/en-us/news/
 
 When a change is detected, it's written in the console window, as well as corresponding .txt files.
 
