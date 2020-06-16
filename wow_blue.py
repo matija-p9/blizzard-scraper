@@ -17,17 +17,17 @@ options.add_experimental_option('excludeSwitches',['enable-logging'])
 import os
 import time
 
-def refresh_blue_pages():
-    us_full_page.set_page_load_timeout(60)
-    us_full_page.refresh()
-    eu_full_page.set_page_load_timeout(60)
-    eu_full_page.refresh()
+def refresh_blue_wow():
+    us_full_page_wow.set_page_load_timeout(60)
+    us_full_page_wow.refresh()
+    eu_full_page_wow.set_page_load_timeout(60)
+    eu_full_page_wow.refresh()
 
 # Start Chrome webdrivers with all the options, for US and EU sites.
-us_full_page = webdriver.Chrome(options=options)
-eu_full_page = webdriver.Chrome(options=options)
-us_full_page.get("https://us.forums.blizzard.com/en/wow/g/blizzard-tracker/activity/posts")
-eu_full_page.get("https://eu.forums.blizzard.com/en/wow/g/blizzard-tracker/activity/posts")
+us_full_page_wow = webdriver.Chrome(options=options)
+eu_full_page_wow = webdriver.Chrome(options=options)
+us_full_page_wow.get("https://us.forums.blizzard.com/en/wow/g/blizzard-tracker/activity/posts")
+eu_full_page_wow.get("https://eu.forums.blizzard.com/en/wow/g/blizzard-tracker/activity/posts")
 
 # Start the scraping loop.
 scrapescounter = 0
@@ -45,23 +45,23 @@ while True:
 
     # Open Chrome, read the pages, or refresh existing instance of webdriver.
     try:
-        refresh_blue_pages()
+        refresh_blue_wow()
     except:
         os.system("TASKKILL /f  /IM  CHROME.EXE >NUL 2>&1")
         os.system("TASKKILL /f  /IM  CHROMEDRIVER.EXE >NUL 2>&1")
-        us_full_page = webdriver.Chrome(options=options)
-        eu_full_page = webdriver.Chrome(options=options)
-        us_full_page.get("https://us.forums.blizzard.com/en/wow/g/blizzard-tracker/activity/posts")
-        eu_full_page.get("https://eu.forums.blizzard.com/en/wow/g/blizzard-tracker/activity/posts")
+        us_full_page_wow = webdriver.Chrome(options=options)
+        eu_full_page_wow = webdriver.Chrome(options=options)
+        us_full_page_wow.get("https://us.forums.blizzard.com/en/wow/g/blizzard-tracker/activity/posts")
+        eu_full_page_wow.get("https://eu.forums.blizzard.com/en/wow/g/blizzard-tracker/activity/posts")
         try:
-            refresh_blue_pages()
+            refresh_blue_wow()
         except:
             continue
         continue
     
     # Store data in raw_html.
-    us_raw_html = str(us_full_page.page_source)
-    eu_raw_html = str(eu_full_page.page_source)
+    us_raw_html = str(us_full_page_wow.page_source)
+    eu_raw_html = str(eu_full_page_wow.page_source)
 
     # Define variables for parsing purposes.
     us_link_loc = []

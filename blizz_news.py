@@ -57,7 +57,6 @@ while True:
     if j == 100: # Reset loop if the webdriver failed to load anything.
         continue
 
-
     # Store post information in a 2D array.
     # [x][y]
     # x : order of posts, 0 is newest
