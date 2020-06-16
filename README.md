@@ -1,5 +1,5 @@
 # Blizzard Scraper - Blue posts & News
-Python3 script for reading and reporting content updates from World of Warcraft official sources
+Python3 script for reading and reporting content updates from Blizzard's official sources
 
 ---
 ## Information
