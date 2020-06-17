@@ -1,6 +1,5 @@
 # Notify user the script is alive.
 PING_AFTER_AMOUNT_OF_CYCLES = 1
-
 # Wait this long between scrapes.
 SECONDS_BETWEEN_SCRAPES = 5
 
@@ -8,13 +7,13 @@ SECONDS_BETWEEN_SCRAPES = 5
 BlizzCon = 1
 Diablo_III = 1
 Diablo_IV = 1
-Call_of_Duty_Modern_Warfare = 0
-Hearthstone = 0
-Heroes_of_the_Storm = 0
-Inside_Blizzard = 0
-Overwatch = 0
-StarCraft_II = 0
-Warcraft_III_Reforged = 0
+Call_of_Duty_Modern_Warfare = 1
+Hearthstone = 1
+Heroes_of_the_Storm = 1
+Inside_Blizzard = 1
+Overwatch = 1
+StarCraft_II = 1
+Warcraft_III_Reforged = 1
 World_of_Warcraft = 1
 
 import os
@@ -99,22 +98,16 @@ while True:
         excludeCategories.append("World of Warcraft")
 
     # Write the scrape to a temporary file _blizz_blue_tmp.txt.
-    f = open("_blizz_news_tmp.txt", "w+", errors='ignore')
+    f = open("_blizz_news_tmp.txt", "w")
     for i in range(len(post)):
         if post[i][0] in excludeCategories:
             continue
         f.write("\n")
         f.write(post[i][0])
         f.write("\n")
-        for j in range(len(post[i][0])):
-            f.write('-')
-        f.write("\n")
         f.write(post[i][1])
         f.write("\n")
         f.write(post[i][2])
-        f.write("\n")
-        f.write("\n")
-        f.write(post[i][3])
         f.write("\n")
         f.write("\n")
     f.close()
@@ -136,7 +129,7 @@ while True:
         os.remove("_blizz_news_tmp.txt")
 
     else:
-        # Write changes to _wow_news.txt and _wow_news_recent.txt.
+        # Write changes to _blizz_news.txt and _blizz_news_recent.txt.
         import difflib
         text1 = open("_blizz_news.txt", errors='ignore', encoding='ascii').readlines()
         text2 = open("_blizz_news_tmp.txt", errors='ignore', encoding='ascii').readlines()

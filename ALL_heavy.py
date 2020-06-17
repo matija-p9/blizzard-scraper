@@ -1,5 +1,5 @@
 # Kill all Chrome processes.
-CHROME_FLUSH_AFTER_CYCLES = 0
+CHROME_FLUSH_AFTER_CYCLES = 50
 # Notify user the script is alive.
 PING_AFTER_AMOUNT_OF_CYCLES = 1
 # Wait this long between scrapes.
@@ -165,22 +165,16 @@ while True:
         excludeCategories.append("World of Warcraft")
 
     # Write the scrape to a temporary file _blizz_blue_tmp.txt.
-    f = open("_blizz_news_tmp.txt", "w+", errors='ignore')
+    f = open("_blizz_news_tmp.txt", "w")
     for i in range(len(post)):
         if post[i][0] in excludeCategories:
             continue
         f.write("\n")
         f.write(post[i][0])
         f.write("\n")
-        for j in range(len(post[i][0])):
-            f.write('-')
-        f.write("\n")
         f.write(post[i][1])
         f.write("\n")
         f.write(post[i][2])
-        f.write("\n")
-        f.write("\n")
-        f.write(post[i][3])
         f.write("\n")
         f.write("\n")
     f.close()
@@ -578,6 +572,7 @@ while True:
                     i += 1
                 except:
                     diff += 1
+                    i += 1
                     continue
         if diff > 0:
 
