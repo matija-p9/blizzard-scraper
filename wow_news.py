@@ -1,6 +1,5 @@
 # Notify user the script is alive.
 PING_AFTER_AMOUNT_OF_CYCLES = 1
-
 # Wait this long between scrapes.
 SECONDS_BETWEEN_SCRAPES = 5
 
@@ -104,15 +103,17 @@ while True:
                 elif line.startswith('-') or line.startswith('+'):
                     changes.write(line[1:])
                     print(line[1:], end='')
+
+            # Clean up the files.
+            os.remove('_wow_news.txt')
+            os.rename('_wow_news_tmp.txt', '_wow_news.txt')
             changes.close()
 
             # Alert user!
             import winsound
             winsound.PlaySound("sound.wav", winsound.SND_FILENAME)
 
-        # Clean up the files.
-        os.remove('_wow_news.txt')
-        os.rename('_wow_news_tmp.txt', '_wow_news.txt')
+
 
     if SECONDS_BETWEEN_SCRAPES > 0:
         time.sleep(SECONDS_BETWEEN_SCRAPES)

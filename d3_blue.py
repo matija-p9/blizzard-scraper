@@ -1,9 +1,7 @@
 # Kill all Chrome processes.
 CHROME_FLUSH_AFTER_CYCLES = 0
-
 # Notify user the script is alive.
 PING_AFTER_AMOUNT_OF_CYCLES = 1
-
 # Wait this long between scrapes.
 SECONDS_BETWEEN_SCRAPES = 5
 
