@@ -228,6 +228,7 @@ while True:
                         i += 1
                     except:
                         diff += 1
+                        i += 1
                         continue
             if diff > 0:
 
