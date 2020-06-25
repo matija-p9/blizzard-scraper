@@ -1,36 +1,15 @@
 # Kill all Chrome processes.
-CHROME_FLUSH_AFTER_CYCLES = 0
+CHROME_FLUSH_AFTER_CYCLES = 10
 # Notify user the script is alive.
 PING_AFTER_AMOUNT_OF_CYCLES = 1
 # Wait this long between scrapes.
 SECONDS_BETWEEN_SCRAPES = 5
 
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
-options = Options()
-options.add_argument('--disable-gpu')
-options.add_argument('--headless')
-options.add_argument('--log-level=3')
-options.add_experimental_option('excludeSwitches',['enable-logging'])
-import os
-import time
+# Declare the function to call for wow_blue scraping.
+def scrape(CHROME_FLUSH_AFTER_CYCLES, PING_AFTER_AMOUNT_OF_CYCLES, scrapescounter, us_full_page_wow, eu_full_page_wow):
 
-def refresh_blue_wow():
-    us_full_page_wow.set_page_load_timeout(60)
-    us_full_page_wow.refresh()
-    eu_full_page_wow.set_page_load_timeout(60)
-    eu_full_page_wow.refresh()
-
-# Start Chrome webdrivers with all the options, for US and EU sites.
-us_full_page_wow = webdriver.Chrome(options=options)
-eu_full_page_wow = webdriver.Chrome(options=options)
-us_full_page_wow.get("https://us.forums.blizzard.com/en/wow/g/blizzard-tracker/activity/posts")
-eu_full_page_wow.get("https://eu.forums.blizzard.com/en/wow/g/blizzard-tracker/activity/posts")
-
-# Start the scraping loop.
-scrapescounter = 0
-while True:
-    scrapescounter += 1
+    import os
+    import time
 
     # Close all instances of Chrome and Chromedriver after CHROME_FLUSH_AFTER_CYCLES scrapes, to safeguard memory.
     if CHROME_FLUSH_AFTER_CYCLES > 0:
@@ -40,10 +19,13 @@ while True:
             print("-----------------------------------------------")
             os.system("TASKKILL /f  /IM  CHROME.EXE >NUL 2>&1")
             os.system("TASKKILL /f  /IM  CHROMEDRIVER.EXE >NUL 2>&1")
+            us_full_page_wow = webdriver.Chrome(options=options)
+            eu_full_page_wow = webdriver.Chrome(options=options)
 
     # Open Chrome, read the pages, or refresh existing instance of webdriver.
     try:
-        refresh_blue_wow()
+        us_full_page_wow.get("https://us.forums.blizzard.com/en/wow/g/blizzard-tracker/activity/posts")
+        eu_full_page_wow.get("https://eu.forums.blizzard.com/en/wow/g/blizzard-tracker/activity/posts")
     except:
         os.system("TASKKILL /f  /IM  CHROME.EXE >NUL 2>&1")
         os.system("TASKKILL /f  /IM  CHROMEDRIVER.EXE >NUL 2>&1")
@@ -51,12 +33,7 @@ while True:
         eu_full_page_wow = webdriver.Chrome(options=options)
         us_full_page_wow.get("https://us.forums.blizzard.com/en/wow/g/blizzard-tracker/activity/posts")
         eu_full_page_wow.get("https://eu.forums.blizzard.com/en/wow/g/blizzard-tracker/activity/posts")
-        try:
-            refresh_blue_wow()
-        except:
-            continue
-        continue
-    
+
     # Store data in raw_html.
     us_raw_html = str(us_full_page_wow.page_source)
     eu_raw_html = str(eu_full_page_wow.page_source)
@@ -82,7 +59,7 @@ while True:
         i = us_raw_html.find(link_beg, i) + len(link_beg)
         j += 1
     if j == 50: # Reset loop if the webdriver failed to load anything.
-        continue
+        return 1
     i, j = 0, 0
     while j < 50:
         if eu_raw_html.find(link_beg, i) + len(link_beg) < i:
@@ -91,7 +68,7 @@ while True:
         i = eu_raw_html.find(link_beg, i) + len(link_beg)
         j += 1
     if j == 50: # Reset loop if the webdriver failed to load anything.
-        continue
+        return 1
 
     # Store post information in a 2D array.
     # [x][y]
@@ -160,22 +137,40 @@ while True:
         import difflib
         text1 = open("_wow_blue.txt", errors='ignore', encoding='ascii').readlines()
         text2 = open("_wow_blue_tmp.txt", errors='ignore', encoding='ascii').readlines()
-        changes = open("_wow_blue_recent.txt", "w")
         for line in difflib.unified_diff(text1, text2):
             if line.startswith('---') or line.startswith('+++'):
                 continue
             elif line.startswith('-') or line.startswith('+'):
-                changes.write(line[1:])
                 print(line[1:], end='')
 
         # Clean up the files.
         os.remove('_wow_blue.txt')
         os.rename('_wow_blue_tmp.txt', '_wow_blue.txt')
-        changes.close()
 
         # Alert user!
         import winsound
         winsound.PlaySound("sound.wav", winsound.SND_FILENAME)
 
-    if SECONDS_BETWEEN_SCRAPES > 0:
-        time.sleep(SECONDS_BETWEEN_SCRAPES)
+if __name__ == "__main__":
+
+    # Start Chrome webdrivers with all the options, for US and EU sites.
+    from selenium import webdriver
+    from selenium.webdriver.chrome.options import Options
+    options = Options()
+    options.add_argument('--disable-gpu')
+    options.add_argument('--headless')
+    options.add_argument('--log-level=3')
+    options.add_experimental_option('excludeSwitches',['enable-logging'])
+    us_full_page_wow = webdriver.Chrome(options=options)
+    eu_full_page_wow = webdriver.Chrome(options=options)
+
+    # Start the scraping loop.
+    scrapescounter = 0
+    while True:
+        scrapescounter += 1
+
+        scrape(CHROME_FLUSH_AFTER_CYCLES, PING_AFTER_AMOUNT_OF_CYCLES, scrapescounter, us_full_page_wow, eu_full_page_wow)
+
+        if SECONDS_BETWEEN_SCRAPES > 0:
+            import time
+            time.sleep(SECONDS_BETWEEN_SCRAPES)

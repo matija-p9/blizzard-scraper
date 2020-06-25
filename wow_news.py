@@ -3,14 +3,11 @@ PING_AFTER_AMOUNT_OF_CYCLES = 1
 # Wait this long between scrapes.
 SECONDS_BETWEEN_SCRAPES = 5
 
-import os
-import time
+# Declare the function to call for wow_news scraping.
+def scrape(PING_AFTER_AMOUNT_OF_CYCLES, scrapescounter):
 
-# Start the scraping loop.
-scrapescounter = 0
-while True:
-    scrapescounter += 1
-
+    import os
+    import time
     # Read the URL and dump it into a huge string.
     try:
         import urllib.request
@@ -19,7 +16,7 @@ while True:
         mystr = mybytes.decode("utf8")
         url_raw.close()
     except:
-        continue
+        return 1
 
     # Prepare parsing tools.
     titlestr = 'NewsBlog-title">'
@@ -37,7 +34,7 @@ while True:
         i = mystr.find(titlestr, i) + len(titlestr)
         j += 1
     if j == 150: # Reset loop if the webdriver failed to load anything.
-        continue
+        return 1
 
     # Write the scrape to a temporary file _wow_news_tmp.txt.
     nf = open("_wow_news_tmp.txt", "w")
@@ -93,27 +90,29 @@ while True:
         if diff > 0:
 
             # Write the changes.
-            changes = open("_wow_news_recent.txt", "w")
-            changes.write('\n')
-            changes.write(time.asctime(time.localtime(time.time())))
-            changes.write('\n\n')
             for line in difflib.unified_diff(text1, text2):
                 if line.startswith('---') or line.startswith('+++'):
                     continue
                 elif line.startswith('-') or line.startswith('+'):
-                    changes.write(line[1:])
                     print(line[1:], end='')
 
             # Clean up the files.
             os.remove('_wow_news.txt')
             os.rename('_wow_news_tmp.txt', '_wow_news.txt')
-            changes.close()
 
             # Alert user!
             import winsound
             winsound.PlaySound("sound.wav", winsound.SND_FILENAME)
 
+if __name__ == "__main__":
 
+    # Start the scraping loop.
+    scrapescounter = 0
+    while True:
+        scrapescounter += 1
 
-    if SECONDS_BETWEEN_SCRAPES > 0:
-        time.sleep(SECONDS_BETWEEN_SCRAPES)
+        scrape(PING_AFTER_AMOUNT_OF_CYCLES, scrapescounter)
+
+        if SECONDS_BETWEEN_SCRAPES > 0:
+            import time
+            time.sleep(SECONDS_BETWEEN_SCRAPES)
