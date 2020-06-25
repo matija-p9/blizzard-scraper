@@ -26,4 +26,5 @@ With that done, edit ALL_heavy.py with a text editor to customize it before runn
 - SECONDS_BETWEEN_SCRAPES - how long should the script wait between two scrapes. It takes 3-4 seconds on average, without waiting.
 ---
 Run ALL_heavy.py.
+
 You can optionally run individual source scripts: blizz_news.py, d3_blue.py, wow_blue.py, wow_news.py.
